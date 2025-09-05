@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { SearchHeader, PostsGrid } from "@/components/search";
@@ -19,7 +20,7 @@ async function fetchRedditPosts(keyword: string): Promise<RedditPost[]> {
   return data.posts;
 }
 
-export default function SearchPage() {
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
 
@@ -34,5 +35,13 @@ export default function SearchPage() {
       <SearchHeader keyword={keyword} />
       <PostsGrid posts={posts} isLoading={isLoading} isError={isError} error={error} />
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="flex flex-col items-center min-h-screen bg-zinc-950 text-white p-4 sm:p-8"><div>Loading...</div></div>}>
+      <SearchPageContent />
+    </Suspense>
   );
 }
